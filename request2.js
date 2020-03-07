@@ -1,5 +1,4 @@
-
-// This module replaces the deprecated request in npm
+// This module replaces the deprecated "request" module in npm
 
 module.exports = function (options,callback) {
 	// Possible options :
@@ -9,9 +8,15 @@ module.exports = function (options,callback) {
 	let url = options.url;
 	let jsonFlag = options.json;
 
-	const https = require('https');
+	let protocol;
+	if (url.search(/https:\/\//i) != -1) { // Check if secure HTTP required
+		protocol = require('https');
+	} else {
+		protocol = require('http');
+	}
 
-	https.get(url, function (resp) {
+
+	protocol.get(url, function (resp) {
 	  let body = "";
 	  let json;
 

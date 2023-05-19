@@ -1,6 +1,6 @@
 // This module replaces the deprecated "request" module in npm
 
-module.exports = function (options,callback) {
+module.exports = function request(options,callback) {
 	// Possible options :
 	// url : address to call
 	// json : true -- body is expected JSON, so parse it
@@ -33,7 +33,14 @@ module.exports = function (options,callback) {
 
 	  // The whole response has been received, so send back the result
 	  resp.on('end', function() {
-	  	if (jsonFlag) {
+      // Check for redirects (statusCode:302)
+      if (resp.statusCode == 302) {
+        request({"url": resp.headers.location, "json": options.json},callback) // Follow redirect
+        return; // Stop execution of current fetch
+      }
+
+      // Check for JSON format
+      if (jsonFlag) {
 		  	try {
 		  		json = JSON.parse(body)
 		  	} catch {
